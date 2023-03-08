@@ -1,0 +1,30 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tenant {
+  id             Int       @id @default(autoincrement())
+  name           String
+  email          String
+  unitName       String
+  rentAmount     Float
+  waivedMonth    DateTime?
+  rentalDiscount Float?
+  expenses       Float?
+  invoices       Invoice[]
+}
+
+model Invoice {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int
+  amountDue Float
+  isPaid    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+}
