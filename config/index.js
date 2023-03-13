@@ -3,15 +3,15 @@ const nodemailer = require("nodemailer");
 const { createWriteStream } = require("fs");
 
 async function generatePdf(invoice) {
-  console.log(invoice)
+  console.log({ invoice });
   const doc = new PDFDocument();
 
   doc.pipe(createWriteStream(`invoices/${invoice.id}.pdf`));
 
   doc.fontSize(18).text("Invoice", { align: "center" });
   doc.fontSize(14).text(`Tenant: ${invoice.tenant.name}`);
-  doc.fontSize(14).text(`Unit: ${invoice.tenant.unit}`);
-  doc.fontSize(14).text(`Amount due: UGX ${invoice.amount}`);
+  doc.fontSize(14).text(`Unit: ${invoice.tenant.unitName}`);
+  doc.fontSize(14).text(`Amount due: UGX ${invoice.amountDue}`);
 
   doc.end();
 

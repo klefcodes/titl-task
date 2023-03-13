@@ -10,23 +10,30 @@ const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// (async () => {
-//   await prisma.tenant
-//     .create({
-//       data: {
-//         name: "John Doe",
-//         email: "john.doe@example.com",
-//         unitName: "Apartment 123",
-//         rentAmount: 100000,
-//         waivedMonth: null,
-//         rentalDiscount: null,
-//         expenses: null,
-//       },
-//     })
-//     .finally(async () => {
-//       await prisma.$disconnect();
-//     });
-// })();
+(async () => {
+  const tenant = await prisma.tenant.findFirst({
+    where: {
+      email: "john.doe@example.com",
+    },
+  });
+  if (tenant) return;
+
+  await prisma.tenant
+    .create({
+      data: {
+        name: "John Doe",
+        email: "john.doe@example.com",
+        unitName: "Apartment 123",
+        rentAmount: 100000,
+        waivedMonth: null,
+        rentalDiscount: null,
+        expenses: null,
+      },
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+})();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

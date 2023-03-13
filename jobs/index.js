@@ -5,14 +5,19 @@ const { generatePdf, sendInvoiceByEmail } = require("../config");
 const prisma = new PrismaClient();
 
 const invoiceJob = () =>
-  cron.schedule("0 0 1 * *", async () => {
+  cron.schedule(process.env.CRON_INTERVAL || "*/5 * * * *", async () => {
     const tenants = await prisma.tenant.findMany();
 
     for (const tenant of tenants) {
       const { id, email, rentAmount, waivedMonth, rentalDiscount, expenses } =
         tenant;
 
-      if (waivedMonth && new Date() < waivedMonth) {
+      console.log(`Processing tenant ${id}...`, tenant);
+
+      if (
+        waivedMonth &&
+        new Date().getTime() < new Date(waivedMonth).getTime()
+      ) {
         continue;
       }
 
@@ -26,10 +31,17 @@ const invoiceJob = () =>
           tenantId: id,
           amountDue,
         },
+        include: {
+          tenant: true,
+        },
       });
 
-      const pdfBuffer = await generatePdf(invoice);
-      await sendInvoiceByEmail(email, pdfBuffer);
+      try {
+        const pdfBuffer = await generatePdf(invoice);
+        await sendInvoiceByEmail(email, pdfBuffer);
+      } catch (error) {
+        console.log(error);
+      }
 
       if (
         new Date() >
