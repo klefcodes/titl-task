@@ -4,8 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "postinstall": "prisma generate",
     "start": "node app.js",
     "dev": "nodemon app.js"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^4.11.0",
@@ -19,6 +23,7 @@
     "pdfkit": "^0.13.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.21"
+    "nodemon": "^2.0.21",
+    "prisma": "^4.11.0"
   }
 }
